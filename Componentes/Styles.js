@@ -611,11 +611,17 @@ export const StylesIot = StyleSheet.create({
   ScrollView:{
     width:'100%',
     backgroundColor:'#023047',
-    paddingTop:80,
+    paddingTop:60,
   },
   Center:{
     justifyContent:'center',
     alignItems:'center',
+  },
+  CenterToken:{
+    justifyContent:'center',
+    alignItems:'center',
+    marginTop:20,
+    marginBottom:-20,
   },
   Titulo:{
     color:'#fff',

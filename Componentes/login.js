@@ -12,7 +12,7 @@ import {
   Alert,
 } from "react-native";
 
-const loginApiUrl = 'https://apipry-dev-gjxn.1.us-1.fl0.io/auth/login';
+const loginApiUrl = 'https://apipry.onrender.com/auth/login';
 
 const fetchLogin = async (email, password) => {
   try {

@@ -14,7 +14,7 @@ const BuscadorHistorial = () => {
   useEffect(() => {
     async function fetchProductos() {
       try {
-        const response = await fetch("https://apipry-dev-gjxn.1.us-1.fl0.io/productos");
+        const response = await fetch("https://apipry.onrender.com/productos");
         if (!response.ok) {
           throw new Error("No se pudieron obtener los productos");
         }

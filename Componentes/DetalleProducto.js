@@ -25,7 +25,7 @@ export const DetalleProducto = () => {
   useEffect(() => {
     async function fetchProducto() {
       try {
-        const response = await fetch(`https://apipry-dev-gjxn.1.us-1.fl0.io/productos/${id}`);
+        const response = await fetch(`https://apipry.onrender.com/productos/${id}`);
         if (!response.ok) {
           throw new Error("No se pudo obtener el producto");
         }
