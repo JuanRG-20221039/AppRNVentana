@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TextInput, Alert } from "react-native";
+import { View, Text, ScrollView, TextInput, Alert, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { StylesIot } from './Styles';
 import { Boton } from './Atomicos';
-import {FontAwesome} from '@expo/vector-icons'
+import { FontAwesome } from '@expo/vector-icons';
 
 export const Grafica = () => {
   const nav = useNavigation();
@@ -13,6 +13,7 @@ export const Grafica = () => {
   const [lluvia, setLluvia] = useState('Sin registros...');
   const [token, setToken] = useState('');
   const [deviceId, setDeviceId] = useState('');
+  const [inputToken, setInputToken] = useState('');
 
   useEffect(() => {
     if (token.trim() !== '') {
@@ -42,11 +43,48 @@ export const Grafica = () => {
     }
   }, [deviceId]); // Ejecutar cuando cambie el deviceId
 
+  const handleBuscarToken = () => {
+
+    if (inputToken.trim() === '') {
+      Alert.alert('Token inválido', 'Por favor ingrese un token válido.');
+      return 1;
+    }
+  
+    fetch(`https://apipry.onrender.com/devices/token/${inputToken}`)
+      .then(response => {
+        if (!response.ok) {
+          Alert.alert('Token inválido', 'El token ingresado no es válido.');
+          return 1;
+        }
+        return response.json();
+      })
+      .then(data => {
+        setToken(inputToken);
+        setDeviceId(data._id);
+      })
+      .catch(error => {
+        Alert.alert('Token inválido', 'El token ingresado no es válido.');
+        console.error('Error al obtener el dispositivo:', error);
+        return 1;
+      });
+  };
+
+  const validarToken = () => {
+    if (token.trim() === '') {
+      Alert.alert('Token inválido', 'Por favor ingrese un token válido.');
+      return false;
+    }
+    return true;
+  };
+  
+
 //FUNCIONES DE LA VENTANA
   const handleToggleVentana = (valor) => {
 
-    if (seguroVentana === 'Seguro Cerrado') {
-      Alert.alert('No se puede abrir, esta colocado el seguro...');
+    if(handleBuscarToken() === 1){
+      return;
+    }
+    if (!validarToken()) {
       return;
     }
 
@@ -54,35 +92,54 @@ export const Grafica = () => {
       method: 'PUT'
     })
     .then(response => {
+      if (seguroVentana === 'Seguro Cerrado') {
+        Alert.alert('No se puede abrir, esta colocado el seguro...');
+        return;
+      }
       if (response.ok) {
         setEstadoVentana(valor === '0' ? 'Ventana Abierta' : 'Ventana Cerrada');
       } else {
-        console.error('Error al cambiar el estado de la ventana');
+        console.log('Error al cambiar el estado de la ventana');
       }
     })
-    .catch(error => console.error('Error al cambiar el estado de la ventana:', error));
+    .catch(error => console.log('Error al cambiar el estado de la ventana:', error));
   };
 
   const handleToggleSeguro = (valor) => {
-    if (estadoVentana === 'Ventana Abierta') {
-      Alert.alert('No se puede usar el seguro cuando la ventana está abierta');
+    
+    if(handleBuscarToken() === 1){
       return;
     }
-  
+    if (!validarToken()) {
+      return;
+    }
+
     fetch(`https://apipry.onrender.com/devices/${deviceId}/cerradura/${valor}`, {
       method: 'PUT'
     })
     .then(response => {
+      if (estadoVentana === 'Ventana Abierta') {
+        Alert.alert('No se puede usar el seguro cuando la ventana está abierta');
+        return;
+      }
       if (response.ok) {
         setSeguroVentana(valor === '0' ? 'Seguro Abierto' : 'Seguro Cerrado');
       } else {
-        console.error('Error al cambiar el estado del seguro de la ventana');
+        console.log('Error al cambiar el estado del seguro de la ventana');
       }
     })
-    .catch(error => console.error('Error al cambiar el estado del seguro de la ventana:', error));
+    .catch(error => console.log('Error al cambiar el estado del seguro de la ventana:', error));
   };  
 
   const handleToggleAlerta = (valor) => {
+    
+    if(handleBuscarToken() === 1){
+      return;
+    }
+    if (!validarToken()) {
+      return;
+    }
+    
     fetch(`https://apipry.onrender.com/devices/${deviceId}/pir/${valor}`, {
       method: 'PUT'
     })
@@ -90,10 +147,10 @@ export const Grafica = () => {
       if (response.ok) {
         setEstadoMovimiento(valor === '0' ? 'DESACTIVADA' : 'ACTIVADA');
       } else {
-        console.error('Error al cambiar el estado de la ventana');
+        console.log('Error al cambiar el estado de la ventana');
       }
     })
-    .catch(error => console.error('Error al cambiar el estado de la ventana:', error));
+    .catch(error => console.log('Error al cambiar el estado de la ventana:', error));
   };
 
   return (
@@ -104,12 +161,22 @@ export const Grafica = () => {
           <FontAwesome name='home' size={60} color={'#fff'} style={{marginTop:10, marginBottom:-20}}/>
         </View>
         <View style={StylesIot.CenterToken}>
-          <TextInput
-            style={StylesIot.input}
-            placeholder={'Ingrese su token...'}
-            value={token}
-            onChangeText={setToken} // Para manejar cambios en el estado del token
-          />
+          <View style={StylesIot.Row}>
+            <TextInput
+              style={StylesIot.inputToken}
+              placeholder={'Ingrese su token...'}
+              value={inputToken}
+              onChangeText={setInputToken} // Para manejar cambios en el estado del token
+            />
+            <Boton
+              texto={'Buscar'}
+              colorA="#ffcd2b"
+              colorB="#BB961D"
+              estiloB={StylesIot.button}
+              estiloT={StylesIot.buttonText}
+              accion={handleBuscarToken}
+            />
+          </View>
         </View>
         <View style={StylesIot.Center}>
           <View style={StylesIot.Card}>

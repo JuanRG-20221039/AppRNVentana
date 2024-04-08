@@ -661,6 +661,14 @@ export const StylesIot = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: "#fff",
   },
+  inputToken: {
+    height: 40,
+    width: "40%",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    backgroundColor: "#fff",
+    marginTop:6,
+  },
   CenterCard:{
     padding:10,
   },
